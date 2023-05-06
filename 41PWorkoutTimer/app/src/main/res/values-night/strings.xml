@@ -6,4 +6,5 @@
     <string name="start_stop">Start/Stop</string>
     <string name="rest_period_duration">Rest Period Duration</string>
     <string name="workout_duration">Workout Duration</string>
+    <string name="number_of_sets">Number of Sets</string>
 </resources>

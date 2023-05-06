@@ -3,12 +3,9 @@ package com.example.a41p_workout_timer;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
-import android.text.Editable;
-import android.util.Log;
 import android.widget.EditText;
+import android.util.Log;
 import android.widget.Button;
-import android.widget.Spinner;
-import android.widget.SpinnerAdapter;
 import android.view.View;
 
 
@@ -18,14 +15,31 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Button startStopWorkoutDurationBtn = findViewById(R.id.idStartWorkoutTimerBtn);
+        startStopWorkoutDurationBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                triggerWorkoutTimer();
+            }
+        });
     }
+    protected CountDownTimer createWorkoutTimer(int workoutDurationVal, int numberOfSets) {
+        return new CountDownTimer((workoutDurationVal * numberOfSets), 1000) {
+            @Override
+            public void onTick(long l) {
 
-    protected CountDownTimer createWorkoutTimer() {
-        EditText workoutDurationInput = findViewById(R.id.idWorkoutDurationEditText);
-        String workoutDurationValStr = workoutDurationInput.getText().toString();
-        long workoutDurationVal = Long.parseLong(workoutDurationValStr);
+            }
+            @Override
+            public void onFinish() {
+             // Todo: Vibrate device
+            }
+        };
+    }
+    protected CountDownTimer createRestPeriodTimer(int restPeriodDurationVal) {
 
-        CountDownTimer workoutDurationCountdownTimer = new CountDownTimer(workoutDurationVal, 1000) {
+
+        return new CountDownTimer(restPeriodDurationVal, 1000) {
             @Override
             public void onTick(long l) {
 
@@ -33,29 +47,48 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onFinish() {
-
+            // Todo: Vibrate device
             }
         };
-
-        return workoutDurationCountdownTimer;
     }
-    protected CountDownTimer createRestPeriodTimer() {
-        EditText restPeriodDurationInput = findViewById(R.id.idRestPeriodDurationEditText);
-        String restPeriodDurationInputValStr = restPeriodDurationInput.getText().toString();
-        long restPeriodDurationVal = Long.parseLong(restPeriodDurationInputValStr);
+    protected void triggerWorkoutTimer() { // Event-Handler
+        try {
+            EditText workoutDurationInput = findViewById(R.id.idWorkoutDurationEditText);
+            String workoutDurationStr = workoutDurationInput.getText().toString();
 
-        CountDownTimer restPeriodDurationCountdownTimer = new CountDownTimer(restPeriodDurationVal, 1000) {
-            @Override
-            public void onTick(long l) {
-
+            if (workoutDurationStr.isEmpty()) {
+                workoutDurationStr = "1";
+                System.out.println(workoutDurationStr);
             }
 
-            @Override
-            public void onFinish() {
 
+            int workoutDuration = Integer.parseInt(workoutDurationStr);
+            System.out.println(workoutDuration);
+
+            EditText restPeriodDurationInput = findViewById(R.id.idRestPeriodDurationEditText);
+            String restPeriodDurationStr = restPeriodDurationInput.getText().toString();
+
+            if (restPeriodDurationStr.isEmpty()) {
+                restPeriodDurationStr = "1";
             }
-        };
 
-        return restPeriodDurationCountdownTimer;
+            int restPeriodDuration = Integer.parseInt(restPeriodDurationStr);
+            System.out.println(restPeriodDuration);
+            EditText numberOfSetsInput = findViewById(R.id.idSetSelector);
+            String numberOfSetsStr = numberOfSetsInput.getText().toString();
+
+            if (numberOfSetsStr.isEmpty()) {
+                numberOfSetsStr = "1";
+            }
+
+            int numberOfSets = Integer.parseInt(numberOfSetsStr);
+            System.out.println(numberOfSets);
+
+//            CountDownTimer workoutDurationTimer = createWorkoutTimer(workoutDuration, numberOfSets);
+//            CountDownTimer restPeriodTimer = createRestPeriodTimer(restPeriodDuration);
+        } catch(Error e) {
+            Log.e("triggerWorkoutTimer: ", "An error has occurred");
+        }
     }
+
 }
