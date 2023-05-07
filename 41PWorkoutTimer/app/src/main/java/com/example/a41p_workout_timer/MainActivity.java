@@ -58,9 +58,7 @@ public class MainActivity extends AppCompatActivity {
 
                     isFirstRun = false;
                 }
-
-                System.out.println("TIMELEFT: " + timeLeft);
-                    workoutCountdownTimer = new CountDownTimer(timeLeft, 1000) {
+                workoutCountdownTimer = new CountDownTimer(timeLeft, 1000) {
                         int tempTimeLeft = timeLeft;
                         @Override
                         public void onTick(long l) {
@@ -72,7 +70,7 @@ public class MainActivity extends AppCompatActivity {
                         @Override
                         public void onFinish() {
                             setsLeft--;
-                            System.out.println("SETS LEFT: " + setsLeft);
+
                             if (setsLeft > 0) {
                                 timeLeft = tempTimeLeft;
                                 startRestPeriodTimer();
