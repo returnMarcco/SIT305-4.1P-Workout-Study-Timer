@@ -1,111 +1,150 @@
 package com.example.a41p_workout_timer;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.widget.EditText;
 import android.util.Log;
 import android.widget.Button;
 import android.view.View;
-
+import android.widget.TextView;
+import android.widget.ProgressBar;
+import android.graphics.Color;
 
 public class MainActivity extends AppCompatActivity {
+    private EditText workoutDuration;
+    private EditText restPeriodDuration;
+    private EditText numberOfSets;
+    private Button startStopWorkoutDurationBtn;
+    private ProgressBar workoutProgressBar;
+    private CountDownTimer workoutCountdownTimer;
+    private CountDownTimer restPeriodCountdownTimer;
+    private int timeLeft;
+    private long setsLeft;
+    private int restPeriod;
+    private boolean timerRunning = false;
+    private boolean isFirstRun = true;
+    private int progressBarToEmpty;
+    private int progressBarCounter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-
-        Button startStopWorkoutDurationBtn = findViewById(R.id.idStartWorkoutTimerBtn);
+        startStopWorkoutDurationBtn = findViewById(R.id.idStartWorkoutTimerBtn);
         startStopWorkoutDurationBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                triggerWorkoutTimer();
-            }
-        });
-    }
-    protected CountDownTimer createWorkoutTimer(int workoutDurationVal, int numberOfSets) {
-        return new CountDownTimer((workoutDurationVal * numberOfSets), 1000) {
-            @Override
-            public void onTick(long l) {
-
-            }
-            @Override
-            public void onFinish() {
-             // Todo: Vibrate device
-            }
-        };
-    }
-    protected CountDownTimer createRestPeriodTimer(int restPeriodDurationVal) {
-
-
-        return new CountDownTimer(restPeriodDurationVal, 1000) {
-            @Override
-            public void onTick(long l) {
-
+                if (timerRunning) {
+                    pauseWorkoutTimer();
+                } else {
+                    startWorkoutTimer();
+                }
             }
 
-            @Override
-            public void onFinish() {
-            // Todo: Vibrate device
+            private void pauseWorkoutTimer() {
+                timerRunning = false;
+                workoutCountdownTimer.cancel();
+                startStopWorkoutDurationBtn.setText("START");
             }
-        };
-    }
-    protected void triggerWorkoutTimer() { // Event-Handler
-        // Timer start/pause flag
-        boolean timerRunning = false;
 
-        try {
-            if (timerRunning = false) {
-                timerRunning = true;
+            private void startWorkoutTimer() {
+                if (isFirstRun) {
+                    // Initialise workout variables from user input
+                    numberOfSetsParseLong();
+                    restPeriodDurationParseLong();
+                    workoutDurationParseLong();
 
-                EditText workoutDurationInput = findViewById(R.id.idWorkoutDurationEditText);
-                String workoutDurationStr = workoutDurationInput.getText().toString();
+                    isFirstRun = false;
+                }
+
+                System.out.println("TIMELEFT: " + timeLeft);
+                    workoutCountdownTimer = new CountDownTimer(timeLeft, 1000) {
+                        int tempTimeLeft = timeLeft;
+                        @Override
+                        public void onTick(long l) {
+                            timeLeft = timeLeft - 1000;
+                            progressBarCounter = (timeLeft / 10); // Todo: Fix the progressBar();
+                            updateWorkoutProgressBar(progressBarCounter);
+                        }
+
+                        @Override
+                        public void onFinish() {
+                            setsLeft--;
+                            System.out.println("SETS LEFT: " + setsLeft);
+                            if (setsLeft > 0) {
+                                timeLeft = tempTimeLeft;
+                                startRestPeriodTimer();
+                            }
+                        }
+                    }.start();
+                    timerRunning = true;
+                    startStopWorkoutDurationBtn.setText("PAUSE");
+                }
+
+                private void startRestPeriodTimer() {
+                int tempRestTime = restPeriod;
+                if (isFirstRun) {
+                    restPeriodDurationParseLong();
+                }
+
+                restPeriodCountdownTimer = new CountDownTimer(restPeriod, 1000) {
+                    @Override
+                    public void onTick(long l) {
+                        restPeriod -= 1000;
+                        updateWorkoutProgressBar(restPeriod + 1000);
+                    }
+
+                    @Override
+                    public void onFinish() {
+                        restPeriod = tempRestTime;
+                        startWorkoutTimer();
+                    }
+                }.start();
+            }
+
+            private int workoutDurationParseLong() {
+                workoutDuration = findViewById(R.id.idWorkoutDurationEditText);
+                String workoutDurationStr = workoutDuration.getText().toString();
 
                 if (workoutDurationStr.isEmpty()) {
-                    workoutDurationStr = "1";
-                    System.out.println(workoutDurationStr);
+                    workoutDurationStr = "30";
                 }
 
+                int workoutDurationNum = Integer.parseInt(workoutDurationStr);
+                progressBarToEmpty = workoutDurationNum * 1000;
+                return timeLeft = workoutDurationNum * 1000;
+            }
 
-                int workoutDuration = Integer.parseInt(workoutDurationStr);
-                System.out.println(workoutDuration);
-
-                EditText restPeriodDurationInput = findViewById(R.id.idRestPeriodDurationEditText);
-                String restPeriodDurationStr = restPeriodDurationInput.getText().toString();
+            private void restPeriodDurationParseLong() {
+                restPeriodDuration = findViewById(R.id.idRestPeriodDurationEditText);
+                String restPeriodDurationStr = restPeriodDuration.getText().toString();
 
                 if (restPeriodDurationStr.isEmpty()) {
-                    restPeriodDurationStr = "1";
+                    restPeriodDurationStr = "30";
                 }
 
-                int restPeriodDuration = Integer.parseInt(restPeriodDurationStr);
-                System.out.println(restPeriodDuration);
-                EditText numberOfSetsInput = findViewById(R.id.idSetSelector);
-                String numberOfSetsStr = numberOfSetsInput.getText().toString();
+                int restPeriodDurationNum = Integer.parseInt(restPeriodDurationStr);
+
+                restPeriod = restPeriodDurationNum * 1000;
+            }
+
+            private void numberOfSetsParseLong() {
+                numberOfSets = findViewById(R.id.idSetSelector);
+                String numberOfSetsStr = numberOfSets.getText().toString();
 
                 if (numberOfSetsStr.isEmpty()) {
-                    numberOfSetsStr = "1";
+                    numberOfSetsStr = "3";
                 }
 
-                int numberOfSets = Integer.parseInt(numberOfSetsStr);
-                System.out.println(numberOfSets);
-
-//              CountDownTimer workoutDurationTimer = createWorkoutTimer(workoutDuration, numberOfSets);
-//              CountDownTimer restPeriodTimer = createRestPeriodTimer(restPeriodDuration);
-
-
-            } else {
-                // When the timer is running and the start/pause button is pressed again
+                long numberOfSetsNum = Long.parseLong(numberOfSetsStr);
+                setsLeft = numberOfSetsNum;
             }
-        } catch(Error e) {
-            Log.e("triggerWorkoutTimer: ", "An error has occurred");
-        }
-    }
 
-    protected void resetAllTimers() {
-        // Button that resets all timers
-    }
-
-
-
-}
+            private void updateWorkoutProgressBar(int workoutProgress) {
+                workoutProgressBar = findViewById(R.id.idWorkoutProgressBar);
+                workoutProgressBar.setProgress(workoutProgress);
+            }
+        });
+    }}

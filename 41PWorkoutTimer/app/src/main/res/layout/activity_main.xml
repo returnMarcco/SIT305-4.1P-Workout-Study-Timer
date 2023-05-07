@@ -152,32 +152,55 @@
 
         <ProgressBar
             android:id="@+id/idWorkoutProgressBar"
-            style="?android:attr/progressBarStyleHorizontal"
-            android:layout_width="171dp"
-            android:layout_height="48dp"
-            android:layout_marginStart="127dp"
+            style="@android:style/Widget.DeviceDefault.ProgressBar.Horizontal"
+            android:layout_width="182dp"
+            android:layout_height="82dp"
+            android:layout_marginStart="116dp"
             android:layout_marginEnd="121dp"
-            android:layout_marginBottom="63dp"
+            android:layout_marginBottom="12dp"
+            android:contentDescription="@string/workout_progress"
+            android:max="100"
+            android:progress="@android:integer/config_longAnimTime"
+            android:progressTint="@android:color/holo_green_light"
+            android:secondaryProgress="50"
+            android:secondaryProgressTint="@android:color/holo_orange_light"
+            android:soundEffectsEnabled="true"
+            android:theme="@style/MaterialAlertDialog.Material3.Title.Text"
             app:layout_constraintBottom_toTopOf="@+id/idSetSelector"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintHorizontal_bias="1.0"
             app:layout_constraintStart_toStartOf="parent" />
 
         <Button
             android:id="@+id/idStartWorkoutTimerBtn"
-            android:layout_width="60dp"
-            android:layout_height="51dp"
-            android:layout_marginStart="179dp"
-            android:layout_marginEnd="180dp"
-            android:layout_marginBottom="56dp"
+            android:layout_width="137dp"
+            android:layout_height="45dp"
+            android:layout_marginStart="141dp"
+            android:layout_marginEnd="141dp"
+            android:layout_marginBottom="52dp"
             android:backgroundTint="#1565C0"
+            android:hint="@string/start"
             android:textSize="10sp"
-            app:icon="@android:drawable/ic_media_play"
             app:iconTint="#FFFFFF"
             app:layout_constraintBottom_toTopOf="@+id/idStartStopTimerBtn"
             app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            tools:ignore="SmallSp,SpeakableTextPresentCheck"
+            tools:text="START" />
+
+        <ImageView
+            android:id="@+id/imageView"
+            android:layout_width="169dp"
+            android:layout_height="175dp"
+            android:layout_marginStart="125dp"
+            android:layout_marginTop="36dp"
+            android:layout_marginEnd="125dp"
+            android:contentDescription="@string/fat_man_eating_burgers_and_fries"
+            app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintHorizontal_bias="0.0"
             app:layout_constraintStart_toStartOf="parent"
-            tools:ignore="SmallSp,SpeakableTextPresentCheck" />
+            app:layout_constraintTop_toTopOf="parent"
+            app:srcCompat="@drawable/fat_man_eating_removebg_preview" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 
