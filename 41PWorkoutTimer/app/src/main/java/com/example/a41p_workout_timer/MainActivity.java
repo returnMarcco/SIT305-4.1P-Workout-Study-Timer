@@ -27,6 +27,7 @@ public class MainActivity extends AppCompatActivity {
     private boolean isFirstRun = true;
     private int progressBarToEmpty;
     private int progressBarCounter;
+    private int progressBarTicks;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -58,13 +59,18 @@ public class MainActivity extends AppCompatActivity {
 
                     isFirstRun = false;
                 }
+
                 workoutCountdownTimer = new CountDownTimer(timeLeft, 1000) {
-                        int tempTimeLeft = timeLeft;
+
+                        int ticksTotal = timeLeft / 1000;
+                        int progressBarDecrement = (100 / ticksTotal) ; // = 10% to decrement each on a 10 second timer
+                        int progressBarPercentage = 100;
+
                         @Override
                         public void onTick(long l) {
-                            timeLeft = timeLeft - 1000;
-                            progressBarCounter = (timeLeft / 10); // Todo: Fix the progressBar();
-                            updateWorkoutProgressBar(progressBarCounter);
+                            timeLeft -= 1000;
+                            progressBarPercentage -= progressBarDecrement;
+                            updateWorkoutProgressBar(progressBarPercentage);
                         }
 
                         @Override
@@ -72,7 +78,7 @@ public class MainActivity extends AppCompatActivity {
                             setsLeft--;
 
                             if (setsLeft > 0) {
-                                timeLeft = tempTimeLeft;
+                                timeLeft = ticksTotal;
                                 startRestPeriodTimer();
                             }
                         }
@@ -80,18 +86,20 @@ public class MainActivity extends AppCompatActivity {
                     timerRunning = true;
                     startStopWorkoutDurationBtn.setText("PAUSE");
                 }
-
                 private void startRestPeriodTimer() {
                 int tempRestTime = restPeriod;
                 if (isFirstRun) {
                     restPeriodDurationParseLong();
                 }
-
                 restPeriodCountdownTimer = new CountDownTimer(restPeriod, 1000) {
+                    int ticksTotal = restPeriod / 1000;
+                    int progressBarPercentage = 0;
                     @Override
+
                     public void onTick(long l) {
                         restPeriod -= 1000;
-                        updateWorkoutProgressBar(restPeriod + 1000);
+                        progressBarPercentage += ticksTotal;
+                        updateWorkoutProgressBar(progressBarPercentage);
                     }
 
                     @Override
@@ -102,7 +110,7 @@ public class MainActivity extends AppCompatActivity {
                 }.start();
             }
 
-            private int workoutDurationParseLong() {
+            private void workoutDurationParseLong() {
                 workoutDuration = findViewById(R.id.idWorkoutDurationEditText);
                 String workoutDurationStr = workoutDuration.getText().toString();
 
@@ -111,8 +119,7 @@ public class MainActivity extends AppCompatActivity {
                 }
 
                 int workoutDurationNum = Integer.parseInt(workoutDurationStr);
-                progressBarToEmpty = workoutDurationNum * 1000;
-                return timeLeft = workoutDurationNum * 1000;
+                timeLeft = workoutDurationNum * 1000;
             }
 
             private void restPeriodDurationParseLong() {
@@ -140,9 +147,10 @@ public class MainActivity extends AppCompatActivity {
                 setsLeft = numberOfSetsNum;
             }
 
-            private void updateWorkoutProgressBar(int workoutProgress) {
+            private int updateWorkoutProgressBar(int workoutProgress) {
                 workoutProgressBar = findViewById(R.id.idWorkoutProgressBar);
                 workoutProgressBar.setProgress(workoutProgress);
+                return workoutProgress;
             }
         });
     }}
